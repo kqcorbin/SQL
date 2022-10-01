@@ -1,0 +1,66 @@
+# For this project, I downloaded Billboard Hot 100 data from Kaggle.
+# Then I created a table to insert Billboard data into.
+# Finally, I performed analytics on the data using SQL.
+
+#Creating the table: 
+CREATE TABLE 'Billboard Hot 100'.'charts (
+date varchar(255),
+spot int,
+song varchar(255),
+artist varchar(255),
+last_week int,
+peak_rank int,
+weeks_on_board int
+)
+
+#Then I inserted the charts.csv into the table.
+
+#Next, I cleaned and altered some of the data using the following SQL queries:
+
+#Add a new column 'id' datatype int as a Primary Key with Auto-Increment as the 1st column
+Alter TABLE charts ADD id INT PRIMARY KEY AUTO_INCREMENT FIRST;
+
+#Modify 'date' column's datatype to DATE TIME
+ALTER TABLE charts
+MODIFY COLUMN date DATETIME;
+
+#Next, I explored the data using the following SQL queries:
+
+#What were the songs in the Billboard Hot 100 the week I was born (born on June 25, 1997)
+SELECT *
+FROM charts
+WHERE date < '1997-06-25' AND date > '1997-06-18'
+ORDER BY spot
+
+#What are the 5 songs with the most weeks on the billboard, in order by number of weeks
+SELECT song,
+	   artist,
+	   MAX(weeks_on_board)
+FROM charts
+GROUP BY 1,2
+ORDER BY 3 DESC
+LIMIT 5
+
+#Which artists have had the most billboard hits since 2000 without any features
+WITH solo AS
+(SELECT *,
+        EXTRACT(YEAR FROM date) AS year
+ FROM charts
+ WHERE artist NOT LIKE '%feat%' AND artist NOT LIKE '%&%'
+ )
+ 
+SELECT artist,
+	   COUNT(DISTINCT song)
+FROM solo
+WHERE year >= '2000'
+GROUP BY 1
+ORDER BY 2 DESC
+
+#List of songs that have had a last week position that is lower than the songs current week position
+SELECT DISTINCT song
+FROM charts
+WHERE last_week < spot
+
+#What artist have never peaked into the top 10 of the billbord charts without a feature or feauring
+
+#How many weeks has Drake had at least one song on the billboard charts either as lead artist or featuring artist
