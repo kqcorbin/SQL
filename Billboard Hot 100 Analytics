@@ -61,6 +61,13 @@ SELECT DISTINCT song
 FROM charts
 WHERE last_week < spot
 
-#What artist have never peaked into the top 10 of the billbord charts without a feature or feauring
+#What artist have never peaked into the top 10 of the billbord charts 
+SELECT *
+FROM (SELECT artist,
+	     MIN(peak_rank) AS high_peak
+      FROM charts
+      GROUP BY 1) sub
+WHERE sub.high_peak > 10
+ORDER BY sub.high_peak ASC
 
 #How many weeks has Drake had at least one song on the billboard charts either as lead artist or featuring artist
