@@ -71,3 +71,18 @@ WHERE sub.high_peak > 10
 ORDER BY sub.high_peak ASC
 
 #How many weeks has Drake had at least one song on the billboard charts either as lead artist or featuring artist
+SELECT COUNT(DISTINCT sub.date) AS Drake_total_weeks
+FROM (SELECT *
+      FROM charts
+      WHERE artist LIKE '%Drake%') sub
+    
+#What songs have been #1 on the Hot 100 and how many weeks did the song stay at #1
+SELECT song,
+       artist,
+       CASE WHEN sub.spot = 1 THEN COUNT(1) ELSE NULL END AS Weeks_at_1
+FROM (SELECT *
+      FROM charts
+      WHERE peak_rank = 1) sub
+GROUP BY 1, 2, sub.spot
+ORDER BY 3 DESC
+
