@@ -4,4 +4,9 @@
 # There are 4 tables being added: orders, order_details, pizza, pizza_types
 # Finally, I performed analytics on the data using mySQL
 
-#Create
+#Create the orders tables
+CREATE TABLE 'Pizza Pizza'.'orders' (
+'order_id' int,
+'date' text,
+'time' text
+)
