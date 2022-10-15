@@ -1,0 +1,7 @@
+# For this project, I downloaded Pizza Place Sales data from Maven Analytics as a part of the Maven Pizza Challenge.
+# This project will use SQL to analyze a years worth of sales data from a fictitious Pizza Place.
+# Then I created tables to insert Pizza Place data into.
+# There are 4 tables being added: orders, order_details, pizza, pizza_types
+# Finally, I performed analytics on the data using mySQL
+
+#Create
