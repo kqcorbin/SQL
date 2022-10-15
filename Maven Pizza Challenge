@@ -4,9 +4,42 @@
 # There are 4 tables being added: orders, order_details, pizza, pizza_types
 # Finally, I performed analytics on the data using mySQL
 
-#Create the orders tables
+# Create the orders table
 CREATE TABLE 'Pizza Pizza'.'orders' (
 'order_id' int,
 'date' text,
 'time' text
 )
+
+# Imported the orders.csv file into the table
+
+# Create the order_details table
+CREATE TABLE 'Pizza Pizza'.'order_details' (
+'order_details_id' int,
+'order_id' int,
+'pizza_id' text,
+'quanity' int
+)
+
+# Imported the order_details.csv file into the table
+
+# Create the pizzas tables
+CREATE TABLE 'Pizza Pizza'.'pizzas' (
+'pizza_id' text,
+'pizza_type_id' text,
+'size' text,
+'price' double
+)
+
+# Imported the pizzas.csv file into the table
+
+# Create the pizza_types tables
+CREATE TABLE 'Pizza Pizza'.'pizza_types' (
+'pizza_type_id' text,
+'name' text,
+'category' text,
+'ingredients' text
+)
+
+# Imported the pizza_types.csv file into the table
+
