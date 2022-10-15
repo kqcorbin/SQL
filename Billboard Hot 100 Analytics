@@ -3,7 +3,7 @@
 # Finally, I performed analytics on the data using SQL.
 
 #Creating the table: 
-CREATE TABLE 'Billboard Hot 100'.'charts (
+CREATE TABLE 'Billboard Hot 100'.'charts' (
 date varchar(255),
 spot int,
 song varchar(255),
