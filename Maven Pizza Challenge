@@ -103,3 +103,15 @@ JOIN pizzas p ON od.pizza_id = p.pizza_id
 	JOIN pizza_types pt ON p.pizza_type_id = pt.pizza_type_id
 GROUP BY 1
 ORDER BY 2 DESC
+
+# What's our average order value?
+WITH total AS
+(SELECT od.order_id,		
+		od.order_details_id,
+		price * quantity AS totals
+FROM order_details od  
+JOIN pizzas p ON od.pizza_id = p.pizza_id
+GROUP BY 1,2,3)
+
+SELECT ROUND(SUM(totals) / COUNT(DISTINCT order_id), 2) AS avg_order_total
+FROM total
