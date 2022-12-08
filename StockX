@@ -1,1 +1,79 @@
+# For this project, I downloaded shoe sales data from StockX's data contest from 2019.
+# Then I created a table to insert the sales data into.
+# Finally, I performed analytics on the data using mySQL.
+
+# Create and Import data into a new table using Import Wizard
+CREATE TABLE 'StockX'.'shoe_sales' (
+date text,
+brand text,
+sneaker name text,
+sales price text,
+retail price text,
+release date text,
+shoe size double,
+buyer region text,
+)
+
+# Cleaning data, column names, and datatypes
+
+# Alter column names
+ALTER TABLE `StockX`.`shoe_sales` 
+CHANGE COLUMN `Order Date` `Order_Date` TEXT NULL DEFAULT NULL ,
+CHANGE COLUMN `Sneaker Name` `Sneaker_Name` TEXT NULL DEFAULT NULL ,
+CHANGE COLUMN `Sale Price` `Sale_Price` TEXT NULL DEFAULT NULL ,
+CHANGE COLUMN `Retail Price` `Retail_Price` TEXT NULL DEFAULT NULL ,
+CHANGE COLUMN `Release Date` `Release_Date` TEXT NULL DEFAULT NULL ,
+CHANGE COLUMN `Shoe Size` `Shoe_Size` DOUBLE NULL DEFAULT NULL ,
+CHANGE COLUMN `Buyer Region` `Buyer_Region` TEXT NULL DEFAULT NULL ;
+
+# Add an ID column, set as primary key that auto-increments, and place as the first column
+ALTER TABLE `StockX`.`shoe_sales` 
+ADD COLUMN `Sale_ID` INT NOT NULL AUTO_INCREMENT FIRST,
+ADD PRIMARY KEY (`Sale_ID`);
+
+# Clean column Order_date for date format and set to DATE datatype
+UPDATE shoe_sales
+SET Order_date = STR_TO_DATE(Order_date, '%m/%d/%Y');
+
+ALTER TABLE shoe_sales
+MODIFY COLUMN Order_Date date
+
+# Clean column Release_date for date format and set to DATE datatype
+UPDATE shoe_sales
+SET release_date = STR_TO_DATE(release_date, '%m/%d/%Y');
+
+ALTER TABLE shoe_sales
+MODIFY COLUMN Release_Date date;
+
+# Clean column Sale_Price to remove "$" and "," and set to INT datatype
+UPDATE shoe_sales
+SET sale_price = TRIM(leading '$' FROM sale_price);
+
+UPDATE shoe_sales
+SET sale_price = REPLACE(sale_price, ',', '');
+
+ALTER TABLE shoe_sales
+MODIFY COLUMN Sale_Price int;
+
+# Clean column Retail_Price to remove "$" and "," and set to INT datatype
+UPDATE shoe_sales
+SET retail_price = TRIM(leading '$' FROM retail_price);
+
+UPDATE shoe_sales
+SET retail_price = REPLACE(retail_price, ',', '');
+
+ALTER TABLE shoe_sales
+MODIFY COLUMN Retail_Price int;
+
+# Change remaining columns from TEXT datatype to VARCHAR datatype
+ALTER TABLE shoe_sales
+MODIFY COLUMN Brand VARCHAR(255);
+
+ALTER TABLE shoe_sales
+MODIFY COLUMN Sneaker_Name VARCHAR(255);
+
+ALTER TABLE shoe_sales
+MODIFY COLUMN Buyer_Region VARCHAR(255);
+
+
 
