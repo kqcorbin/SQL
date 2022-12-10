@@ -112,4 +112,17 @@ WHERE Release_Date > order_date
 GROUP BY 1,2
 ORDER BY ROUND(AVG(((sale_price - retail_price) / retail_price) * 100), 1) DESC
 
-# 
+# What is the average sale price the 1st week following a shoe's release date compared to the average sale price over the 1st year after the release date
+SELECT ss.sneaker_name,
+		ss.release_date,
+        weeks.average_1_week_sales,
+		CONCAT('$', ROUND(AVG(ss.sale_price), 2)) AS average_1_year_sales
+FROM shoe_sales ss
+JOIN (SELECT sneaker_name, release_date, CONCAT('$', ROUND(AVG(sale_price), 2)) AS average_1_week_sales
+        FROM shoe_sales
+        WHERE order_date BETWEEN release_date AND DATE_ADD(release_date, INTERVAL 1 week)
+        GROUP BY 1,2
+        ) AS weeks ON ss.sneaker_name = weeks.sneaker_name
+WHERE ss.order_date BETWEEN ss.release_date AND DATE_ADD(ss.release_date, INTERVAL 1 year)
+GROUP BY 1,2,3
+ORDER BY 1 
