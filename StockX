@@ -75,5 +75,41 @@ MODIFY COLUMN Sneaker_Name VARCHAR(255);
 ALTER TABLE shoe_sales
 MODIFY COLUMN Buyer_Region VARCHAR(255);
 
+# Now, I am able to analyze a clean data set and solve problems using queries
 
+# Which brand had more StockX sales and which had the higher total profit on StockX in this time frame
+SELECT brand,
+		   COUNT(Sale_ID) AS Total_Shoes,
+       CONCAT('$',SUM(Sale_Price) - SUM(retail_price)) AS Total_Price
+FROM shoe_sales
+GROUP BY 1
+ORDER BY 1, 2 DESC
 
+# What was each shoe's highest single sale on StockX (including order date, sneaker name, and the retail price)
+WITH maximum AS
+(SELECT Sneaker_Name,   
+		MAX(sale_price) AS highest_sale
+FROM shoe_sales 
+GROUP BY 1)
+
+SELECT ss.order_date,
+		   mm.sneaker_name,
+       mm.highest_sale,
+       ss.retail_price
+FROM shoe_sales ss
+JOIN maximum mm USING(sneaker_name)
+WHERE mm.highest_sale = ss.sale_price
+ORDER BY 3 DESC
+
+# Which shoes had sales before their official release date and what was the average profit percentage made on StockX before the release
+SELECT sneaker_name,
+		   release_date,
+		   COUNT(sale_id) AS shoes_sold,
+       CONCAT('$', SUM(sale_price - retail_price)) AS total_profit,
+		   CONCAT(ROUND(AVG(((sale_price - retail_price) / retail_price) * 100), 0), '%') AS avg_sale_percentage_above_retail
+FROM shoe_sales
+WHERE Release_Date > order_date
+GROUP BY 1,2
+ORDER BY ROUND(AVG(((sale_price - retail_price) / retail_price) * 100), 1) DESC
+
+#
