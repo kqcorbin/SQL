@@ -58,20 +58,20 @@ CHANGE COLUMN 'time' 'time' TIME NULL DEFAULT NULL ;
 # What days and times seem to be the busiest (most orders)
 WITH days_and_hours AS
 (SELECT *,
-		EXTRACT(HOUR from time) AS hours,
+	EXTRACT(HOUR from time) AS hours,
         WEEKDAY(date) AS week_day
  FROM orders)
 
 SELECT	week_day,
-		CASE WHEN week_day = 0 THEN 'Monday'
-			 WHEN week_day = 1 THEN 'Tuesday'
+	CASE WHEN week_day = 0 THEN 'Monday'
+	     WHEN week_day = 1 THEN 'Tuesday'
              WHEN week_day = 2 THEN 'Wednesday'
-			 WHEN week_day = 3 THEN 'Thursday'
+	     WHEN week_day = 3 THEN 'Thursday'
              WHEN week_day = 4 THEN 'Friday'
-			 WHEN week_day = 5 THEN 'Saturday'
+	     WHEN week_day = 5 THEN 'Saturday'
              WHEN week_day = 6 THEN 'Sunday' ELSE NULL END AS name_of_day,
-		COUNT(CASE WHEN hours < 15 THEN 1 ELSE NULL END) AS early_afternoon,
-		COUNT(CASE WHEN hours >= 15 AND hours < 19 THEN 1 ELSE NULL END) AS midday,
+	COUNT(CASE WHEN hours < 15 THEN 1 ELSE NULL END) AS early_afternoon,
+	COUNT(CASE WHEN hours >= 15 AND hours < 19 THEN 1 ELSE NULL END) AS midday,
         COUNT(CASE WHEN hours >= 19 THEN 1 ELSE NULL END) AS Night,
         COUNT(*) AS weekday_totals
 FROM days_and_hours
@@ -81,13 +81,13 @@ ORDER BY 6 DESC
 # How many pizzas are being made during Peak Times
 
 WITH days_hours AS
-(SELECT 	*,
-		EXTRACT(HOUR from time) AS hours,
+(SELECT *,
+	EXTRACT(HOUR from time) AS hours,
         WEEKDAY(date) AS week_day
  FROM orders)
 
 SELECT 	week_day,
-		hours,
+	hours,
         COUNT(dh.order_id) AS order_count,
         SUM(quantity) AS pizza_count
 FROM days_hours dh
@@ -97,7 +97,7 @@ ORDER BY 3 DESC
 
 # What are our best and worst selling pizzas
 SELECT  pt.name,
-		SUM(quantity) AS pizzas_sold
+	SUM(quantity) AS pizzas_sold
 FROM order_details od
 JOIN pizzas p ON od.pizza_id = p.pizza_id
 	JOIN pizza_types pt ON p.pizza_type_id = pt.pizza_type_id
@@ -107,8 +107,8 @@ ORDER BY 2 DESC
 # What's our average order value?
 WITH total AS
 (SELECT od.order_id,		
-		od.order_details_id,
-		price * quantity AS totals
+	od.order_details_id,
+	price * quantity AS totals
 FROM order_details od  
 JOIN pizzas p ON od.pizza_id = p.pizza_id
 GROUP BY 1,2,3)
