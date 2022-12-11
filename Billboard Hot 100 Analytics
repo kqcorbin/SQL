@@ -34,8 +34,8 @@ ORDER BY spot
 
 #What are the 5 songs with the most weeks on the billboard, in order by number of weeks
 SELECT song,
-	   artist,
-	   MAX(weeks_on_board)
+       artist,
+       MAX(weeks_on_board)
 FROM charts
 GROUP BY 1,2
 ORDER BY 3 DESC
@@ -50,7 +50,7 @@ WITH solo AS
  )
  
 SELECT artist,
-	   COUNT(DISTINCT song)
+       COUNT(DISTINCT song)
 FROM solo
 WHERE year >= '2000'
 GROUP BY 1
