@@ -126,3 +126,20 @@ JOIN (SELECT sneaker_name, release_date, CONCAT('$', ROUND(AVG(sale_price), 2)) 
 WHERE ss.order_date BETWEEN ss.release_date AND DATE_ADD(ss.release_date, INTERVAL 1 year)
 GROUP BY 1,2,3
 ORDER BY 1 
+
+# What region is spending the most money on shoes and how many shoes are bought in each particular month in these regions
+WITH counter AS
+(SELECT MONTHNAME(order_date) AS Month,
+	buyer_region,
+	COUNT(sale_id) AS num,
+        SUM(sale_price) AS money
+ FROM shoe_sales
+ GROUP BY 1,2)
+SELECT Month,
+       buyer_region, 
+       CONCAT('$', ROUND(money, 2)) AS total_money_spent,
+       num AS shoes_bought
+FROM counter
+GROUP BY 1, 2
+ORDER BY Money DESC, 2 DESC
+
