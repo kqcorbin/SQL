@@ -1,0 +1,36 @@
+# In this Project, I will be analyzing data on a Telecom company's customer churn  
+# The data is split into 2 different tables - customer_churn and zips_population  
+# These tables contain data for customer data and zip codes with their populations, respectively
+# These tables were Created in MySQL and then the .csv files were imported into their respective tables
+
+# Exploratory Analysis
+# Using SQL, I was able to explore and answer questions about the data to help the company understand their customers
+
+# How many total customers were there and how many did not stay (churned)?
+# ANSWER: Total - 7043 ; Churned - 1869
+
+SELECT COUNT(DISTINCT Customer_ID)  AS total_customers,
+		   (SELECT COUNT(*)
+		    FROM customer_churn
+        WHERE customer_status LIKE 'Churned') AS Churned
+FROM Telecom.customer_churn;
+
+# Of those customers that churned, how many were men vs women?
+# ANSWER: MEN - 930 ; Female - 939
+
+SELECT  GENDER,
+		COUNT(1) AS number_of_churned
+FROM customer_churn
+WHERE customer_status LIKE 'churned'
+GROUP BY 1
+
+# What were the 3 most frequent churn categories causing customer churn?
+# ANSWER: 1) Competitor - 841 2) Dissatifaction - 321 3) Attitude - 314 
+
+SELECT  churn_category,
+        COUNT(*) AS num_customers
+FROM customer_churn
+WHERE customer_status LIKE 'churned'
+GROUP BY 1
+ORDER BY 2 DESC
+LIMIT 3

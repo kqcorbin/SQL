@@ -1,7 +1,0 @@
-# In this Project, I will be analyzing data about Virginia's EVs/Hybrid Vehicles and the Charging Stations 
-# using data from Bureau of Transportation 
-# The data is split into 4 different tables - Elec, Hybrids, Charging_Stations, and counties_zips 
-# These tables contain data for Electric Vehicles, Hybrids, Charging Stations and VA counties, respectively
-# These tables were Created in MySQL and then the csv files were imported into their respective tables
-
-# 
