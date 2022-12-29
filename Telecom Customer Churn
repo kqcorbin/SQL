@@ -126,9 +126,44 @@ FROM customer_churn
 WHERE customer_status = 'Stayed' OR Customer_Status = 'Churned'
 GROUP BY Customer_Status;
 
+# What are some of the reoccurring churn reasons? (Top 3)
+# ANSWER:1) Competitor had better devices, 2) Competitor made better offer 3) Attitude of support person
 
+SELECT Churn_reason,
+       COUNT(*) AS total_customers
+FROM customer_churn
+WHERE Customer_Status = 'Churned'
+GROUP BY 1
+ORDER BY 2 DESC;
 
+# What percentage of a zipcode's population is our customer?
+# ANSWER:
 
+SELECT pop.zip_code,
+       pop.population,
+       COUNT(*) AS customers,
+       CONCAT(ROUND(((COUNT(*)) / pop.population * 100.0), 2), '%') AS percentage
+FROM customer_churn cc
+JOIN zips_population pop ON cc.zip_code = pop.Zip_Code
+GROUP BY 1,2
+ORDER BY COUNT(*) / pop.population DESC
 
+# What percentage of our customers churned per zip code?
+# ANSWER:
 
+WITH churn_totals AS
+(SELECT zip_code,
+	   COUNT(*) AS churn_count
+ FROM customer_churn
+ WHERE customer_status = 'Churned'
+ GROUP BY 1)
+
+SELECT cc.zip_code,
+	   COUNT(*) AS total_customers,
+       ct.churn_count AS churned_customers,
+       CONCAT(ROUND(((churn_count / COUNT(*)) * 100.0)), '%') AS percent_churned
+FROM customer_churn cc 
+JOIN churn_totals ct ON cc.zip_code = ct.zip_code
+GROUP BY 1
+ORDER BY churn_count / COUNT(*) DESC
 
