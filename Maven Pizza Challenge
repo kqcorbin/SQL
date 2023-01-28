@@ -56,46 +56,46 @@ CHANGE COLUMN 'time' 'time' TIME NULL DEFAULT NULL ;
 # Next, I answered a few questions using SQL queries 
 
 # What days and times seem to be the busiest (most orders)
+
 WITH days_and_hours AS
 (SELECT *,
 	EXTRACT(HOUR from time) AS hours,
         WEEKDAY(date) AS week_day
  FROM orders)
 
-SELECT	week_day,
-	CASE WHEN week_day = 0 THEN 'Monday'
-	     WHEN week_day = 1 THEN 'Tuesday'
-             WHEN week_day = 2 THEN 'Wednesday'
-	     WHEN week_day = 3 THEN 'Thursday'
-             WHEN week_day = 4 THEN 'Friday'
-	     WHEN week_day = 5 THEN 'Saturday'
-             WHEN week_day = 6 THEN 'Sunday' ELSE NULL END AS name_of_day,
-	COUNT(CASE WHEN hours < 15 THEN 1 ELSE NULL END) AS early_afternoon,
-	COUNT(CASE WHEN hours >= 15 AND hours < 19 THEN 1 ELSE NULL END) AS midday,
-        COUNT(CASE WHEN hours >= 19 THEN 1 ELSE NULL END) AS Night,
-        COUNT(*) AS weekday_totals
+SELECT CASE WHEN week_day = 0 THEN 'Monday'
+	    WHEN week_day = 1 THEN 'Tuesday'
+	    WHEN week_day = 2 THEN 'Wednesday'
+	    WHEN week_day = 3 THEN 'Thursday'
+	    WHEN week_day = 4 THEN 'Friday'
+	    WHEN week_day = 5 THEN 'Saturday'
+	    WHEN week_day = 6 THEN 'Sunday' ELSE NULL END AS 'Weekday',
+        COUNT(*) AS 'Total # of Orders',
+        ROUND((COUNT(order_id) / COUNT(DISTINCT date)), 0) AS 'Average Orders per Day'
 FROM days_and_hours
 GROUP BY 1
-ORDER BY 6 DESC
+ORDER BY 2 DESC;
+
+SELECT DATE_FORMAT(time, '%h %p') AS Hours,
+        COUNT(*) AS 'Total Orders',
+        ROUND((COUNT(order_id) / COUNT(DISTINCT date)), 0) AS 'Average Orders'
+FROM orders
+GROUP BY 1
+ORDER BY 2 DESC;
 
 # How many pizzas are being made during Peak Times
 
-WITH days_hours AS
-(SELECT *,
-	EXTRACT(HOUR from time) AS hours,
-        WEEKDAY(date) AS week_day
- FROM orders)
-
-SELECT 	week_day,
-	hours,
-        COUNT(dh.order_id) AS order_count,
-        SUM(quantity) AS pizza_count
-FROM days_hours dh
-JOIN order_details tail ON dh.order_id = tail.order_id
-GROUP BY 1,2
-ORDER BY 3 DESC
+SELECT 	DATE_FORMAT(time, '%h %p') AS Hours,
+        SUM(tail.quantity) AS '# of Pizzas Ordered',
+        ROUND((SUM(tail.quantity)/COUNT(DISTINCT o.date)),0) AS 'Average Pizzas Made'
+FROM orders o
+JOIN order_details tail ON o.order_id = tail.order_id
+WHERE DATE_FORMAT(time, '%h %p') IN ('12 PM', '01 PM', '05 PM', '06 PM')
+GROUP BY 1
+ORDER BY 2 DESC
 
 # What are our best and worst selling pizzas
+
 SELECT  pt.name,
 	SUM(quantity) AS pizzas_sold
 FROM order_details od
@@ -115,3 +115,26 @@ GROUP BY 1,2,3)
 
 SELECT ROUND(SUM(totals) / COUNT(DISTINCT order_id), 2) AS avg_order_total
 FROM total
+
+# How well are we utilizing our seating capacity? (we have 15 tables and 60 seats)
+
+WITH table_count AS 
+(SELECT order_id,   
+	    SUM(quantity) AS pizzas,   
+        CASE WHEN SUM(quantity) < 5 THEN 1      
+             WHEN SUM(quantity) >= 5 AND SUM(quantity) < 9 THEN 2              
+             WHEN SUM(quantity) >= 9 AND SUM(quantity) < 13 THEN 3              
+             WHEN SUM(quantity) >= 13 AND SUM(quantity) < 17 THEN 4              
+             WHEN SUM(quantity) >= 17 AND SUM(quantity) < 21 THEN 5              
+             WHEN SUM(quantity) >= 21 AND SUM(quantity) < 25 THEN 6              
+			 WHEN SUM(quantity) >= 25 AND SUM(quantity) < 29 THEN 7 ELSE 8 END AS Tables 
+        FROM order_details 
+        GROUP BY 1)  
+
+SELECT CONCAT(date,' at ', DATE_FORMAT(time, '%h %p')) AS Hours,     
+	   SUM(tc.tables) AS 'Tables Needed',
+       SUM(pizzas) AS 'Pizzas Ordered'
+FROM orders o 
+JOIN table_count tc ON o.order_id = tc.order_id 
+GROUP BY 1 
+ORDER BY 2 desc
